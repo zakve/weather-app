@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { StyleSheet, View, SafeAreaView, FlatList } from 'react-native';
-import { Text, Button, ListItem } from '@rneui/themed';
+import { Text, Button } from '@rneui/themed';
 
 import InputUi from './components/InputUi';
 import ListItemUi from './components/ListItemUi';
@@ -10,8 +10,8 @@ export default function App() {
   const [latitude, setLatitude] = useState('')
   const [longitude, setLongitude] = useState('')
   const [errorText, setErrorText] = useState(' ')
-  const [lastId, setLastId] = useState(0)
-  const [locations, setLocation] = useState<Ilocations[]>([{ id: 1, latitude: '5', longitude: '10', temperature: '' }, { id: 2, latitude: '5', longitude: '10', temperature: '' }])
+  const [lastId, setLastId] = useState(3)
+  const [locations, setLocation] = useState<Ilocations[]>([{ id: 1, latitude: '5', longitude: '15', temperature: '' }, { id: 2, latitude: '5', longitude: '10', temperature: '' }])
 
   useEffect(() => {
     const controller = new AbortController();
@@ -34,8 +34,19 @@ export default function App() {
     // save validated inputs
     setErrorText(' ')
     setLocation(locations => [...locations, { id: lastId, latitude, longitude, temperature: '' }])
+    setLastId(lastId => lastId + 1)
     setLatitude('')
     setLongitude('')
+  }
+
+  const removeLocationHandler = (id: number) => {
+    const removeIndex = locations.findIndex(location => location.id === id)
+
+    if (removeIndex > -1) {
+      const newArray = [...locations];
+      newArray.splice(removeIndex, 1)
+      setLocation(newArray)
+    }
   }
 
   return (
@@ -68,7 +79,7 @@ export default function App() {
           latitude={item.latitude}
           longitude={item.longitude}
           temperature={item.temperature}
-          onPress={() => { console.log('press') }}
+          onPress={() => removeLocationHandler(item.id)}
         />}
       />
     </SafeAreaView>
