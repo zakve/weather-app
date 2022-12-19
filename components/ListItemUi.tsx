@@ -2,10 +2,11 @@ import { StyleSheet } from 'react-native';
 import { ListItem, ListItemProps } from '@rneui/themed';
 
 const ListItemUi = (props: (ListItemProps & Ilocations)) => {
-    const { onPress, latitude, longitude, temperature } = props;
+    const { id, latitude, longitude, temperature, onPress } = props;
 
     return (
         <ListItem
+            key={id}
             style={styles.listContainer}
             onPress={onPress}
         >

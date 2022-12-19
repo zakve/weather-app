@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { StyleSheet, View, SafeAreaView, FlatList } from 'react-native';
 import { Text, Button, ListItem } from '@rneui/themed';
 
@@ -10,7 +10,19 @@ export default function App() {
   const [latitude, setLatitude] = useState('')
   const [longitude, setLongitude] = useState('')
   const [errorText, setErrorText] = useState(' ')
-  const [locations, setLocation] = useState<Ilocations[]>([])
+  const [lastId, setLastId] = useState(0)
+  const [locations, setLocation] = useState<Ilocations[]>([{ id: 1, latitude: '5', longitude: '10', temperature: '' }, { id: 2, latitude: '5', longitude: '10', temperature: '' }])
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+    // fetch
+
+    return () => {
+      controller.abort()
+    }
+  }, [locations])
+
 
   const addLocationHandler = () => {
     // basic validation
@@ -21,7 +33,7 @@ export default function App() {
 
     // save validated inputs
     setErrorText(' ')
-    setLocation(locations => [...locations, { latitude, longitude, temperature: '' }])
+    setLocation(locations => [...locations, { id: lastId, latitude, longitude, temperature: '' }])
     setLatitude('')
     setLongitude('')
   }
@@ -52,6 +64,7 @@ export default function App() {
       <FlatList
         data={locations}
         renderItem={({ item }) => <ListItemUi
+          id={item.id}
           latitude={item.latitude}
           longitude={item.longitude}
           temperature={item.temperature}
