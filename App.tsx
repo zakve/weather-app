@@ -3,6 +3,7 @@ import { StyleSheet, View, SafeAreaView, FlatList } from 'react-native';
 import { Text, Button, ListItem } from '@rneui/themed';
 
 import InputUi from './components/InputUi';
+import ListItemUi from './components/ListItemUi';
 import { isLatitude, isLongitude } from './utils/utils';
 
 export default function App() {
@@ -48,20 +49,15 @@ export default function App() {
         />
       </View>
 
-      <View>
-        <FlatList
-          data={locations}
-          renderItem={({ item }) => <ListItem bottomDivider>
-            <ListItem.Content>
-              <ListItem.Title>{`${item.latitude}, ${item.longitude}`}</ListItem.Title>
-              {
-                item.temperature &&
-                <ListItem.Title right>{`${item.temperature} °C`}</ListItem.Title>
-              }
-            </ListItem.Content>
-          </ListItem>}
-        />
-      </View>
+      <FlatList
+        data={locations}
+        renderItem={({ item }) => <ListItemUi
+          latitude={item.latitude}
+          longitude={item.longitude}
+          temperature={item.temperature}
+          onPress={() => { console.log('press') }}
+        />}
+      />
     </SafeAreaView>
   );
 }
