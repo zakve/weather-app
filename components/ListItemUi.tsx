@@ -10,12 +10,9 @@ const ListItemUi = (props: (ListItemProps & Ilocations)) => {
             style={styles.listContainer}
             onPress={onPress}
         >
-            <ListItem.Content>
+            <ListItem.Content style={styles.listContent}>
                 <ListItem.Title>{`${latitude}, ${longitude}`}</ListItem.Title>
-                {
-                    temperature &&
-                    <ListItem.Title right>{`${temperature} °C`}</ListItem.Title>
-                }
+                <ListItem.Title right>{`${temperature || '-'} °C`}</ListItem.Title>
             </ListItem.Content>
         </ListItem>
     )
@@ -28,6 +25,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         overflow: 'hidden'
+    },
+    listContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
     }
 });
 
