@@ -5,23 +5,45 @@ import { Text, Button } from '@rneui/themed';
 import InputUi from './components/InputUi';
 import ListItemUi from './components/ListItemUi';
 import { isLatitude, isLongitude } from './utils/utils';
+import { getMeteo } from './api/ApiService';
 
 export default function App() {
   const [latitude, setLatitude] = useState('')
   const [longitude, setLongitude] = useState('')
   const [errorText, setErrorText] = useState(' ')
-  const [lastId, setLastId] = useState(3)
-  const [locations, setLocation] = useState<Ilocations[]>([{ id: 1, latitude: '5', longitude: '15', temperature: '' }, { id: 2, latitude: '5', longitude: '10', temperature: '' }])
+  const [lastId, setLastId] = useState(0)
+  const [locations, setLocation] = useState<Ilocations[]>([])
 
   useEffect(() => {
+    if (lastId < 0)
+      return
+
+    const tempIndex = locations.findIndex(location => location.id === lastId - 1);
+    if (tempIndex < 0)
+      return
+
     const controller = new AbortController();
     const { signal } = controller;
-    // fetch
+
+    const { latitude, longitude } = locations[tempIndex]
+
+    const fetchTemperature = async () => {
+      const newArray = [...locations];
+      try {
+        const res = await getMeteo({ params: { latitude, longitude }, signal })
+        newArray[tempIndex].temperature = res?.current_weather?.temperature;
+        setLocation(newArray)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    fetchTemperature();
 
     return () => {
       controller.abort()
     }
-  }, [locations])
+  }, [lastId])
 
 
   const addLocationHandler = () => {
@@ -34,6 +56,7 @@ export default function App() {
     // save validated inputs
     setErrorText(' ')
     setLocation(locations => [...locations, { id: lastId, latitude, longitude, temperature: '' }])
+    // temporary ID - replace with DB ID
     setLastId(lastId => lastId + 1)
     setLatitude('')
     setLongitude('')
