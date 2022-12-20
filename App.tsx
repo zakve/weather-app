@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { StyleSheet, SafeAreaView, FlatList } from 'react-native';
+import { StyleSheet, SafeAreaView } from 'react-native';
 import { Text } from '@rneui/themed';
 
 import { getMeteo } from './api/ApiService';
@@ -42,7 +42,6 @@ export default function App() {
   }, [lastId])
 
   const addLocationHandler = ({ id, latitude, longitude, temperature }: Ilocations) => {
-    // get new location object and last id
     setLocation(locations => [...locations, { id, latitude, longitude, temperature: '' }])
     setLastId(id)
   }

@@ -15,7 +15,6 @@ const ListCoordinates = ({ locationsProps, setLocationsProps }: Props) => {
         if (removeIndex > -1) {
             const newArray = [...locationsProps];
             newArray.splice(removeIndex, 1)
-            //locationsProps = newArray
             setLocationsProps(newArray)
         }
 
