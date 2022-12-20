@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { StyleSheet, SafeAreaView, FlatList } from 'react-native';
 import { Text } from '@rneui/themed';
 
-import ListItemUi from './components/ListItemUi';
 import { getMeteo } from './api/ApiService';
 import FormCoordinates from './components/FormCoordinates';
+import ListCoordinates from './components/ListCoordinates';
 
 export default function App() {
   const [lastId, setLastId] = useState(-1)
@@ -41,38 +41,17 @@ export default function App() {
     }
   }, [lastId])
 
-
   const addLocationHandler = ({ id, latitude, longitude, temperature }: Ilocations) => {
     // get new location object and last id
     setLocation(locations => [...locations, { id, latitude, longitude, temperature: '' }])
     setLastId(id)
   }
 
-  const removeLocationHandler = (id: number) => {
-    const removeIndex = locations.findIndex(location => location.id === id)
-
-    if (removeIndex > -1) {
-      const newArray = [...locations];
-      newArray.splice(removeIndex, 1)
-      setLocation(newArray)
-    }
-  }
-
   return (
     <SafeAreaView style={styles.container}>
       <Text h1>Weather APP</Text>
       <FormCoordinates addLocationHandler={addLocationHandler} />
-
-      <FlatList
-        data={locations}
-        renderItem={({ item }) => <ListItemUi
-          id={item.id}
-          latitude={item.latitude}
-          longitude={item.longitude}
-          temperature={item.temperature}
-          onPress={() => removeLocationHandler(item.id)}
-        />}
-      />
+      <ListCoordinates locationsProps={locations} setLocationsProps={setLocation} />
     </SafeAreaView>
   );
 }
