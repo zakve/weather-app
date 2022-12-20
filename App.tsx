@@ -1,24 +1,20 @@
 import { useState, useEffect } from 'react'
-import { StyleSheet, View, SafeAreaView, FlatList } from 'react-native';
-import { Text, Button } from '@rneui/themed';
+import { StyleSheet, SafeAreaView, FlatList } from 'react-native';
+import { Text } from '@rneui/themed';
 
-import InputUi from './components/InputUi';
 import ListItemUi from './components/ListItemUi';
-import { isLatitude, isLongitude } from './utils/utils';
 import { getMeteo } from './api/ApiService';
+import FormCoordinates from './components/FormCoordinates';
 
 export default function App() {
-  const [latitude, setLatitude] = useState('')
-  const [longitude, setLongitude] = useState('')
-  const [errorText, setErrorText] = useState(' ')
-  const [lastId, setLastId] = useState(0)
+  const [lastId, setLastId] = useState(-1)
   const [locations, setLocation] = useState<Ilocations[]>([])
 
   useEffect(() => {
     if (lastId < 0)
       return
 
-    const tempIndex = locations.findIndex(location => location.id === lastId - 1);
+    const tempIndex = locations.findIndex(location => location.id === lastId);
     if (tempIndex < 0)
       return
 
@@ -46,20 +42,10 @@ export default function App() {
   }, [lastId])
 
 
-  const addLocationHandler = () => {
-    // basic validation
-    if (!isLatitude(parseInt(latitude)) || !isLongitude(parseInt(longitude))) {
-      setErrorText('Please set correct Lat and Long')
-      return
-    }
-
-    // save validated inputs
-    setErrorText(' ')
-    setLocation(locations => [...locations, { id: lastId, latitude, longitude, temperature: '' }])
-    // temporary ID - replace with DB ID
-    setLastId(lastId => lastId + 1)
-    setLatitude('')
-    setLongitude('')
+  const addLocationHandler = ({ id, latitude, longitude, temperature }: Ilocations) => {
+    // get new location object and last id
+    setLocation(locations => [...locations, { id, latitude, longitude, temperature: '' }])
+    setLastId(id)
   }
 
   const removeLocationHandler = (id: number) => {
@@ -75,25 +61,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <Text h1>Weather APP</Text>
-      <View>
-        <InputUi
-          placeholder='Latitude'
-          keyboardType='numeric'
-          value={latitude}
-          onChangeText={val => setLatitude(val)}
-        />
-        <InputUi
-          placeholder='Longitude'
-          keyboardType='numeric'
-          value={longitude}
-          onChangeText={val => setLongitude(val)}
-        />
-        <Text style={styles.errorText}>{errorText}</Text>
-        <Button
-          title="Add location"
-          onPress={addLocationHandler}
-        />
-      </View>
+      <FormCoordinates addLocationHandler={addLocationHandler} />
 
       <FlatList
         data={locations}
