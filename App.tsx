@@ -7,43 +7,47 @@ import FormCoordinates from './components/FormCoordinates';
 import ListCoordinates from './components/ListCoordinates';
 
 export default function App() {
-  const [lastId, setLastId] = useState(-1)
+  const [temperatureIds, setTemperatureIds] = useState<number[]>([])
   const [locations, setLocation] = useState<Ilocations[]>([])
 
   useEffect(() => {
-    if (lastId < 0)
-      return
-
-    const tempIndex = locations.findIndex(location => location.id === lastId);
-    if (tempIndex < 0)
-      return
-
     const controller = new AbortController();
     const { signal } = controller;
 
-    const { latitude, longitude } = locations[tempIndex]
+    if (temperatureIds?.length < 1)
+      return
 
-    const fetchTemperature = async () => {
-      const newArray = [...locations];
-      try {
-        const res = await getMeteo({ params: { latitude, longitude }, signal })
-        newArray[tempIndex].temperature = res?.current_weather?.temperature;
-        setLocation(newArray)
-      } catch (error) {
-        console.error(error)
+    for (let id of temperatureIds) {
+      const tempIndex = locations.findIndex(location => location.id === id);
+      if (tempIndex < 0)
+        return
+
+      const { latitude, longitude } = locations[tempIndex]
+
+      const fetchTemperature = async () => {
+        const newArray = [...locations];
+        try {
+          const res = await getMeteo({ params: { latitude, longitude }, signal })
+          newArray[tempIndex].temperature = res?.current_weather?.temperature;
+          setLocation(newArray)
+          temperatureIds.shift()
+        } catch (error) {
+          console.error(error)
+        }
       }
-    }
 
-    fetchTemperature();
+      fetchTemperature();
+    }
 
     return () => {
       controller.abort()
     }
-  }, [lastId])
+  }, [temperatureIds])
 
   const addLocationHandler = ({ id, latitude, longitude, temperature }: Ilocations) => {
     setLocation(locations => [...locations, { id, latitude, longitude, temperature: '' }])
-    setLastId(id)
+    // push array of IDs
+    setTemperatureIds(oldArray => [...oldArray, id])
   }
 
   return (
